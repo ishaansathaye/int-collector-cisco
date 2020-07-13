@@ -112,6 +112,51 @@
             - IP network number, direct/indirect flag, router IP address, and interface number 
         - IP refers to the table for each outgoing IP packet
     - Content of route table can be changed and is defined by the network manager
-- Direct Routing Details
-    - 
-    
+
+## User Datagram Protocol (UDP)
+- One of two main protocols that are on top of IP
+    - Offers service to network applications
+    - Example: Network File System and Simple Network Management Protocol
+    - Pushes the datagram out on the net and accepts incoming datagrams off the net
+    - __Two Values__
+        - Multiplexing of information between applications based on port number
+        - Checksum to check the integrity of the data
+- Ports
+    - UDP ports is a path of communication between an application and UDP
+    - UDP preserves the message boundary defined by the application
+        - Never joins two applications messages together or divides a single application
+- Checksum
+    - When a UDP module receives the UDP the UDP datagram from IP, it examines the UDP checksum
+    - If 0 then it was not calculated and can be ignored
+    - If valid then destination port number is examined and an application message is queued for the application to read
+        - Else, the datagram is discarded
+
+## Transmission Control Protocol (TCP)
+- TCP offers connection-oriented byte stream, not connectionless datagram delivery service
+    - Guarantees delivery, while UDP does not
+- Used by network applications that require delivery and cannot deal with time-outs and retransmissions
+- Requires more CPU and network bandwidth, also internals of the module are more complicated 
+
+## Network Applications
+- TCP and UDP supply different services 
+- TCP
+    - Reliable stream delivery service
+    - Efficiency over long-haul circuits
+- UDP
+    - Datagram service
+    - Efficiency over fast networks with short latency
+- TELNET
+    - Provides a remote login capability on TCP
+- FTP
+    - File Transfer Protocol uses TCP
+    - Allows you to copy files between computers
+- rsh
+    - Called remote shell and is one of an entire family of remote UNIX style commands
+- NFS
+    - Uses UDP and is for mounting UNIX file systems on multiple computers
+- SNMP
+    - Uses UDP and designed for use by central network management stations
+- X-Window
+    - X Window is much more than a utility for drawing windows, but rather philosophy for designing a user interface
+
+# End __TCP/IP__
