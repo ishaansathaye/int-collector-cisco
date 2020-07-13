@@ -81,4 +81,37 @@
     - **The Ethernet frame is transmitted on the Ethernet**
 
 ## Internet Protocol
-- 
+- Essence of IP is its route table
+    - In-memory table is used to make decisions about routing an IP packet
+- Direct Routing
+    - When sending a packet from one computer to another, the IP headers include IP header and Ethernet header for the source and the destination
+    - When the destination computer receives it, it checks the address against its own and then sends it to the upper protocols
+- Indirect Routing <p align="center"><img src="images/indirect.png" width="1000"></p>
+    - Example above is of three IP Networks and 1 internet
+    - Router to computer communication is direct routing
+        - Pair of computers on the same IP network is direct routing 
+    - For A to communicate with E, first it must go through D to forward the packet -> indirect routing
+        - Router D realizes that destination is not D so sends to the real computer IP address: E
+        - Ethernet addresses are not the same: first destination is D and then destination is E
+- IP Module Routing Rules
+    - **An IP entering from upper layer must send the packet directly or indirectly and must choose a lower network interface**
+    - **An IP entering from lower interface must forward the packet or pass it to upper layer**
+    - **An incoming IP packet that has arrived can never be forwarded back out the same network interface**
+- IP Address
+    - Network managers assign IP addresses to computers according to the IP network that each computer is associated with
+    - For a computer with an IP address of 223.1.2.1, the network number is 223.1.2 and the host number is number 1
+    - **Class C:** Upper 3 bits indicate that 21 bits are the network number and 8 bits are the host number
+- Names
+    - __Hosts__ file contains name-to-address translation data <p align="center"><img src="images/naming.png" width="1000"></p>
+    - If larger networks then file stored on a server and accessed when needed
+    - Not required for the operation of an internet, but makes it easier for people
+- IP Route Table
+    - IP looks up which lower network interface to use when sending a packet in the route table
+    - __Route Table__
+        - The primary columns
+            - IP network number, direct/indirect flag, router IP address, and interface number 
+        - IP refers to the table for each outgoing IP packet
+    - Content of route table can be changed and is defined by the network manager
+- Direct Routing Details
+    - 
+    
