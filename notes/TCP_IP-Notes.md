@@ -8,7 +8,7 @@
     - Protocols, applications, and network medium
     - Sample protocols: UDP, ARP, and ICMP
     - Sample applications: TELNET, FTP, and rcp
-- Structure <p align="center"><img src="images/structure.png" width="1000"></p>
+- Structure <p align="center"><img src="structure.png" width="1000"></p>
     - Structure of the layered protocols inside a computer on an internet
     - **Boxes are the processing of the data as it passes through the computer**
     - **Lines connecting the boxes show the path of data**
@@ -28,10 +28,10 @@
 - Flow of Data
     - FTP (FileTransfer Protocol) is a typical application that uses TCP
         - Protocol stack: FTP/TCP/IP/ENET.
-    - Multiplexers switch many inputs to one output. De-multi are opposite <p align="center"><img src="images/multi.png" width="1000"></p>
-- Two Network Interfaces <p align="center"><img src="images/two.png" width="1000"></p>
+    - Multiplexers switch many inputs to one output. De-multi are opposite <p align="center"><img src="multi.png" width="1000"></p>
+- Two Network Interfaces <p align="center"><img src="two.png" width="1000"></p>
     - Computers with more than one physical network interface, the IP module is both a multiplexer and de-multiplexer
-    - Performs multiplexing in both directions to accommodate incoming and outgoing data: <p align="center"><img src="images/both.png" width="1000"></p>
+    - Performs multiplexing in both directions to accommodate incoming and outgoing data: <p align="center"><img src="both.png" width="1000"></p>
     - It can forward data onto the next network and data can arrive on any network interface and be sent out to any other
     - **"Forwarding" an IP Packet** is the process of sending an IP packet out onto another network
     - **"IP-router"** is a computer that has been dedicated the task of forwarding IP packets
@@ -54,7 +54,7 @@
 ## ARP
 - Address Resolution Protocol is used to translate IP addresses to Ethernet addresses
     - Only for outgoing IP packets, since is is when the IP header and Ethernet headers are created
-- ARP table for Address Translation <p align="center"><img src="images/table.png" width="1000"></p>
+- ARP table for Address Translation <p align="center"><img src="table.png" width="1000"></p>
     - Ethernet address
         - 6-byte and hexadecimal and separating with minus or colon
     - IP address
@@ -69,9 +69,9 @@
     - ARP table cannon be used:
         - **ARP request packet with a broadcast Ethernet address is sent out on the network to every computer**
         - **Outgoing IP packet is queued**
-    - ARP request packet: <p align="center"><img src="images/request.png" width="1000"></p>
+    - ARP request packet: <p align="center"><img src="request.png" width="1000"></p>
         - Essentially says: "If your IP address matches this target IP address, then please tell me your Ethernet address"
-    - ARP response packet: <p align="center"><img src="images/response.png" width="1000"></p>
+    - ARP response packet: <p align="center"><img src="response.png" width="1000"></p>
         - The ARP response packet says "Yes, that
         target IP address is mine, let me give you my Ethernet address"
     - Finally, the ARP module examines the ARP packet and adds the sender's IP and Ethernet addresses to its ARP table.
@@ -86,7 +86,7 @@
 - Direct Routing
     - When sending a packet from one computer to another, the IP headers include IP header and Ethernet header for the source and the destination
     - When the destination computer receives it, it checks the address against its own and then sends it to the upper protocols
-- Indirect Routing <p align="center"><img src="images/indirect.png" width="1000"></p>
+- Indirect Routing <p align="center"><img src="indirect.png" width="1000"></p>
     - Example above is of three IP Networks and 1 internet
     - Router to computer communication is direct routing
         - Pair of computers on the same IP network is direct routing 
@@ -102,7 +102,7 @@
     - For a computer with an IP address of 223.1.2.1, the network number is 223.1.2 and the host number is number 1
     - **Class C:** Upper 3 bits indicate that 21 bits are the network number and 8 bits are the host number
 - Names
-    - __Hosts__ file contains name-to-address translation data <p align="center"><img src="images/naming.png" width="1000"></p>
+    - __Hosts__ file contains name-to-address translation data <p align="center"><img src="naming.png" width="1000"></p>
     - If larger networks then file stored on a server and accessed when needed
     - Not required for the operation of an internet, but makes it easier for people
 - IP Route Table
