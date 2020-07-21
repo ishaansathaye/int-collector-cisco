@@ -1,5 +1,5 @@
 byteFile = open('byte-stream.txt', 'rb')
-byte = byteFile.read(1)
+byte = byteFile.readline()
 
 
 while byte:
