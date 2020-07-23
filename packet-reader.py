@@ -14,15 +14,15 @@ hexStream = byteFile.readline()
 # print(hexStream)
 
 ethernetFrame = hexStream[0:28] # Ethernet frame is a 14-byte header: two 6-byte addresses and a 2-byte type field
-print(bcolors.WARNING + ethernetFrame[0:12] + bcolors.ENDC + bcolors.OKGREEN + ethernetFrame[12:24] + bcolors.ENDC + bcolors.HEADER + ethernetFrame[24:28] + bcolors.ENDC)
+print(bcolors.WARNING + ethernetFrame[0:12] + bcolors.ENDC + " " + bcolors.OKGREEN + ethernetFrame[12:24] + bcolors.ENDC + " " + bcolors.HEADER + ethernetFrame[24:28] + bcolors.ENDC)
 
 destinationEthernet = ethernetFrame[0:12] # Yellow
-print(destinationEthernet)
+print("DMAC: " + bcolors.WARNING + destinationEthernet + bcolors.ENDC)
 
 sourceEthernet = ethernetFrame[12:24] # Green 
-print(sourceEthernet)
+print("SMAC: " + bcolors.OKGREEN + sourceEthernet + bcolors.ENDC)
 
 typeFieldEthernet = ethernetFrame[24:28] # Purple
-print(typeFieldEthernet)
+print("EType: " + bcolors.HEADER + typeFieldEthernet + bcolors.ENDC)
 
 byteFile.close()
