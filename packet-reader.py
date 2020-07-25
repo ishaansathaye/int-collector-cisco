@@ -11,7 +11,6 @@ class bcolors:
 byteFile = open('byte-streamVXLAN.txt', 'r')
 hexStream = byteFile.readline()
 
-# print(hexStream)
 
 #Ethernet
 print()
@@ -29,6 +28,7 @@ print("EType: " + bcolors.OKGREEN + typeFieldEthernet + bcolors.ENDC)
 
 
 #IP
+ipProtocol = None
 if (typeFieldEthernet == "0800"):
     print()
     ipFrame = hexStream[28:68]
@@ -63,6 +63,7 @@ else:
 
 
 #UDP
+destinationUDP = None
 if (ipProtocol == '11'):
     print()
     udpFrame = hexStream[68:84]
@@ -83,13 +84,37 @@ else:
     print("Cannon display UDP Header!")
 
 
-#VXLAN
+#VXLAN - based on VXLAN GPE Header
+nextProtocol = None
 if destinationUDP == "12b5":
     print()
-    print("Found VXLAN Port!")
+    vxlanFrame = hexStream[84:100]
+    vxlan_Flags = bcolors.HEADER + vxlanFrame[0:2] + bcolors.ENDC
+    vxlan_Reserved1 = bcolors.OKBLUE + vxlanFrame[2:6] + bcolors.ENDC
+    nextProtocol = vxlanFrame[6:8]
+    vni = bcolors.WARNING + vxlanFrame[8:14] + bcolors.ENDC
+    vxlan_Reserved2 = bcolors.FAIL + vxlanFrame[14:16] + bcolors.ENDC
+
+    print(bcolors.BOLD + "VXLAN Frame: " + vxlan_Flags + " " + vxlan_Reserved1 + " " + bcolors.OKGREEN
+    + nextProtocol + bcolors.ENDC + " " + vni + " " + vxlan_Reserved2)
+
+    print("Flags: " + vxlan_Flags)
+    print("Reserved: " + vxlan_Reserved1)
+    print("Next Protocol: " + bcolors.OKGREEN + nextProtocol + bcolors.ENDC)
+    print("VNI: " + vni)
+    print("Reserved: " + vxlan_Reserved2)
 else:
     print()
     print("Cannot display VXLAN Header")
+
+
+#INT - 05 value for next protocol
+if nextProtocol == "05":
+    print()
+    print("INT header exists!")
+else:
+    print()
+    print("Cannon display INT Header!")
 
 print()
 byteFile.close()
