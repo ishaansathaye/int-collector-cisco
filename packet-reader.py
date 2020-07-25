@@ -8,21 +8,88 @@ class bcolors:
     BOLD = '\033[1m'
     UNDERLINE = '\033[4m'
 
-byteFile = open('byte-stream.txt', 'r')
+byteFile = open('byte-streamVXLAN.txt', 'r')
 hexStream = byteFile.readline()
 
 # print(hexStream)
 
-ethernetFrame = hexStream[0:28] # Ethernet frame is a 14-byte header: two 6-byte addresses and a 2-byte type field
-print(bcolors.WARNING + ethernetFrame[0:12] + bcolors.ENDC + " " + bcolors.OKGREEN + ethernetFrame[12:24] + bcolors.ENDC + " " + bcolors.HEADER + ethernetFrame[24:28] + bcolors.ENDC)
+#Ethernet
+print()
+ethernetFrame = hexStream[0:28]
+destinationEthernet = bcolors.HEADER + ethernetFrame[0:12] + bcolors.ENDC
+sourceEthernet = bcolors.OKBLUE + ethernetFrame[12:24] + bcolors.ENDC
+typeFieldEthernet = ethernetFrame[24:28]
 
-destinationEthernet = ethernetFrame[0:12] # Yellow
-print("DMAC: " + bcolors.WARNING + destinationEthernet + bcolors.ENDC)
+print(bcolors.BOLD + "Ethernet Frame: " + bcolors.ENDC + destinationEthernet + " " + 
+sourceEthernet + " " + bcolors.OKGREEN + typeFieldEthernet + bcolors.ENDC)
 
-sourceEthernet = ethernetFrame[12:24] # Green 
-print("SMAC: " + bcolors.OKGREEN + sourceEthernet + bcolors.ENDC)
+print("DMAC: " + destinationEthernet)
+print("SMAC: " + sourceEthernet)
+print("EType: " + bcolors.OKGREEN + typeFieldEthernet + bcolors.ENDC)
 
-typeFieldEthernet = ethernetFrame[24:28] # Purple
-print("EType: " + bcolors.HEADER + typeFieldEthernet + bcolors.ENDC)
 
+#IP
+if (typeFieldEthernet == "0800"):
+    print()
+    ipFrame = hexStream[28:68]
+    version_headerLength = bcolors.HEADER + ipFrame[0:2] + bcolors.ENDC
+    typeService = bcolors.OKBLUE + ipFrame[2:4] + bcolors.ENDC
+    totalLength = bcolors.OKGREEN + ipFrame[4:8] + bcolors.ENDC
+    identification = bcolors.WARNING + ipFrame[8:12] + bcolors.ENDC
+    flags = bcolors.FAIL + ipFrame[12:16] + bcolors.ENDC
+    timeLive = bcolors.HEADER + ipFrame[16:18] + bcolors.ENDC
+    ipProtocol = ipFrame[18:20]
+    headChecksum = bcolors.OKGREEN + ipFrame[20:24] + bcolors.ENDC
+    sourceIP = bcolors.WARNING + ipFrame[24:32] + bcolors.ENDC
+    destinationIP = bcolors.FAIL + ipFrame[32:40] + bcolors.ENDC
+
+    print(bcolors.BOLD + "IP Frame: " + bcolors.ENDC + version_headerLength + " " + typeService + " " + totalLength 
+    + " " + identification + " " + flags + " " + timeLive + " " + bcolors.OKBLUE + 
+    ipProtocol + bcolors.ENDC + " " + headChecksum + " " + sourceIP + " " + destinationIP)
+
+    print("Version: " + version_headerLength)
+    print("Type of Service: " + typeService)
+    print("Total Length: " + totalLength)
+    print("Identification: " + identification)
+    print("Flags: " + flags)
+    print("Time to Live: " + timeLive)
+    print("Protocol: " + bcolors.OKBLUE + ipProtocol + bcolors.ENDC)
+    print("Header Checksum: " + headChecksum)
+    print("Source: " + sourceIP)
+    print("Destination: " + destinationIP)
+else:
+    print()
+    print('Cannot display IP Header!')
+
+
+#UDP
+if (ipProtocol == '11'):
+    print()
+    udpFrame = hexStream[68:84]
+    sourceUDP = bcolors.HEADER + udpFrame[0:4] + bcolors.ENDC
+    destinationUDP = udpFrame[4:8]
+    lengthUDP = bcolors.OKGREEN + udpFrame[8:12] + bcolors.ENDC
+    udpChecksum = bcolors.WARNING + udpFrame[12:16] + bcolors.ENDC
+    
+    print(bcolors.BOLD + "UDP Frame: " + bcolors.ENDC + sourceUDP + " " + bcolors.OKBLUE + destinationUDP + 
+    bcolors.ENDC + " " + lengthUDP + " " + udpChecksum)
+
+    print("Source: " + sourceUDP)
+    print("Destination: " + bcolors.OKBLUE + destinationUDP + bcolors.ENDC)
+    print("Length: " + lengthUDP)
+    print("UDP Checksum: " + udpChecksum)
+else:
+    print()
+    print("Cannon display UDP Header!")
+
+
+#VXLAN
+if destinationUDP == "12b5":
+    print()
+    print("Found VXLAN Port!")
+else:
+    print()
+    print("Cannot display VXLAN Header")
+
+print()
 byteFile.close()
