@@ -9,28 +9,28 @@ class bcolors:
     UNDERLINE = '\033[4m'
 
 byteFile = open('byte-streamVXLAN.txt', 'r')
+global hexStream
 hexStream = byteFile.readline()
 
 
 #Ethernet
-print()
-ethernetFrame = hexStream[0:28]
-destinationEthernet = bcolors.HEADER + ethernetFrame[0:12] + bcolors.ENDC
-sourceEthernet = bcolors.OKBLUE + ethernetFrame[12:24] + bcolors.ENDC
-typeFieldEthernet = ethernetFrame[24:28]
-
-print(bcolors.BOLD + "Ethernet Frame: " + bcolors.ENDC + destinationEthernet + " " + 
-sourceEthernet + " " + bcolors.OKGREEN + typeFieldEthernet + bcolors.ENDC)
-
-print("DMAC: " + destinationEthernet)
-print("SMAC: " + sourceEthernet)
-print("EType: " + bcolors.OKGREEN + typeFieldEthernet + bcolors.ENDC)
-
+class Ethernet():   
+    ethernetFrame = hexStream[0:28]
+    destinationEthernet = bcolors.HEADER + ethernetFrame[0:12] + bcolors.ENDC
+    sourceEthernet = bcolors.OKBLUE + ethernetFrame[12:24] + bcolors.ENDC
+    typeFieldEthernet = ethernetFrame[24:28]
+    def getTypeFieldIP(self):
+        return self.typeFieldEthernet
+    def displayEthernet(self):
+        print()
+        print(bcolors.BOLD + "Ethernet Frame: " + bcolors.ENDC + self.destinationEthernet + " " + 
+        self.sourceEthernet + " " + bcolors.OKGREEN + self.typeFieldEthernet + bcolors.ENDC)
+        print("DMAC: " + self.destinationEthernet)
+        print("SMAC: " + self.sourceEthernet)
+        print("EType: " + bcolors.OKGREEN + self.typeFieldEthernet + bcolors.ENDC)
 
 #IP
-ipProtocol = None
-if (typeFieldEthernet == "0800"):
-    print()
+class IP():    
     ipFrame = hexStream[28:68]
     version_headerLength = bcolors.HEADER + ipFrame[0:2] + bcolors.ENDC
     typeService = bcolors.OKBLUE + ipFrame[2:4] + bcolors.ENDC
@@ -42,79 +42,101 @@ if (typeFieldEthernet == "0800"):
     headChecksum = bcolors.OKGREEN + ipFrame[20:24] + bcolors.ENDC
     sourceIP = bcolors.WARNING + ipFrame[24:32] + bcolors.ENDC
     destinationIP = bcolors.FAIL + ipFrame[32:40] + bcolors.ENDC
+    def getIPProtocol(self):
+        return self.ipProtocol
+    def displayIP(self):
+        print()
+        print(bcolors.BOLD + "IP Frame: " + bcolors.ENDC + self.version_headerLength + " " + self.typeService + " " + self.totalLength 
+        + " " + self.identification + " " + self.flags + " " + self.timeLive + " " + bcolors.OKBLUE + 
+        self.ipProtocol + bcolors.ENDC + " " + self.headChecksum + " " + self.sourceIP + " " + self.destinationIP)
+        print("Version: " + self.version_headerLength)
+        print("Type of Service: " + self.typeService)
+        print("Total Length: " + self.totalLength)
+        print("Identification: " + self.identification)
+        print("Flags: " + self.flags)
+        print("Time to Live: " + self.timeLive)
+        print("Protocol: " + bcolors.OKBLUE + self.ipProtocol + bcolors.ENDC)
+        print("Header Checksum: " + self.headChecksum)
+        print("Source: " + self.sourceIP)
+        print("Destination: " + self.destinationIP)
 
-    print(bcolors.BOLD + "IP Frame: " + bcolors.ENDC + version_headerLength + " " + typeService + " " + totalLength 
-    + " " + identification + " " + flags + " " + timeLive + " " + bcolors.OKBLUE + 
-    ipProtocol + bcolors.ENDC + " " + headChecksum + " " + sourceIP + " " + destinationIP)
 
-    print("Version: " + version_headerLength)
-    print("Type of Service: " + typeService)
-    print("Total Length: " + totalLength)
-    print("Identification: " + identification)
-    print("Flags: " + flags)
-    print("Time to Live: " + timeLive)
-    print("Protocol: " + bcolors.OKBLUE + ipProtocol + bcolors.ENDC)
-    print("Header Checksum: " + headChecksum)
-    print("Source: " + sourceIP)
-    print("Destination: " + destinationIP)
-else:
-    print()
-    print('Cannot display IP Header!')
 
 
 #UDP
-destinationUDP = None
-if (ipProtocol == '11'):
-    print()
+class UDP():
     udpFrame = hexStream[68:84]
     sourceUDP = bcolors.HEADER + udpFrame[0:4] + bcolors.ENDC
     destinationUDP = udpFrame[4:8]
     lengthUDP = bcolors.OKGREEN + udpFrame[8:12] + bcolors.ENDC
     udpChecksum = bcolors.WARNING + udpFrame[12:16] + bcolors.ENDC
-    
-    print(bcolors.BOLD + "UDP Frame: " + bcolors.ENDC + sourceUDP + " " + bcolors.OKBLUE + destinationUDP + 
-    bcolors.ENDC + " " + lengthUDP + " " + udpChecksum)
-
-    print("Source: " + sourceUDP)
-    print("Destination: " + bcolors.OKBLUE + destinationUDP + bcolors.ENDC)
-    print("Length: " + lengthUDP)
-    print("UDP Checksum: " + udpChecksum)
-else:
-    print()
-    print("Cannon display UDP Header!")
+    def getDestinationUDP(self):
+        return self.destinationUDP
+    def displayUDP(self):
+        print()
+        print(bcolors.BOLD + "UDP Frame: " + bcolors.ENDC + self.sourceUDP + " " + bcolors.OKBLUE + self.destinationUDP + 
+        bcolors.ENDC + " " + self.lengthUDP + " " + self.udpChecksum)
+        print("Source: " + self.sourceUDP)
+        print("Destination: " + bcolors.OKBLUE + self.destinationUDP + bcolors.ENDC)
+        print("Length: " + self.lengthUDP)
+        print("UDP Checksum: " + self.udpChecksum)
 
 
 #VXLAN - based on VXLAN GPE Header
-nextProtocol = None
-if destinationUDP == "12b5":
-    print()
+class VXLAN():
     vxlanFrame = hexStream[84:100]
     vxlan_Flags = bcolors.HEADER + vxlanFrame[0:2] + bcolors.ENDC
     vxlan_Reserved1 = bcolors.OKBLUE + vxlanFrame[2:6] + bcolors.ENDC
     nextProtocol = vxlanFrame[6:8]
     vni = bcolors.WARNING + vxlanFrame[8:14] + bcolors.ENDC
     vxlan_Reserved2 = bcolors.FAIL + vxlanFrame[14:16] + bcolors.ENDC
-
-    print(bcolors.BOLD + "VXLAN Frame: " + vxlan_Flags + " " + vxlan_Reserved1 + " " + bcolors.OKGREEN
-    + nextProtocol + bcolors.ENDC + " " + vni + " " + vxlan_Reserved2)
-
-    print("Flags: " + vxlan_Flags)
-    print("Reserved: " + vxlan_Reserved1)
-    print("Next Protocol: " + bcolors.OKGREEN + nextProtocol + bcolors.ENDC)
-    print("VNI: " + vni)
-    print("Reserved: " + vxlan_Reserved2)
-else:
-    print()
-    print("Cannot display VXLAN Header")
-
+    def getNextProtocol(self):
+        return self.nextProtocol
+    def displayVXLAN(self):
+        print()
+        print(bcolors.BOLD + "VXLAN Frame: " + self.vxlan_Flags + " " + self.vxlan_Reserved1 + " " + bcolors.OKGREEN
+        + self.nextProtocol + bcolors.ENDC + " " + self.vni + " " + self.vxlan_Reserved2)
+        print("Flags: " + self.vxlan_Flags)
+        print("Reserved: " + self.vxlan_Reserved1)
+        print("Next Protocol: " + bcolors.OKGREEN + self.nextProtocol + bcolors.ENDC)
+        print("VNI: " + self.vni)
+        print("Reserved: " + self.vxlan_Reserved2)
 
 #INT - 05 value for next protocol
-if nextProtocol == "05":
-    print()
-    print("INT header exists!")
+class INT():
+    pass
+
+#Packet Class inheriting
+class Packet(Ethernet, IP, UDP, VXLAN):
+    pass
+    
+newPacket = Packet()
+typeField = newPacket.getTypeFieldIP()
+newPacket.displayEthernet()
+if typeField == '0800':
+    newPacket.displayIP()
+    ipProtocol = newPacket.getIPProtocol()
+    if ipProtocol == '11':
+        newPacket.displayUDP()
+        destinationUDP = newPacket.getDestinationUDP()
+        if destinationUDP == "12b5":
+            newPacket.displayVXLAN()
+            nextProtocol = newPacket.getNextProtocol()
+            if nextProtocol == "05":
+                print()
+                print("INT header exists!")
+            else:
+                print()
+                print("Cannot display INT Header!")
+        else:
+            print()
+            print("Cannot display VXLAN Header")
+    else:
+        print()
+        print("Cannot display UDP Header!")
 else:
     print()
-    print("Cannon display INT Header!")
+    print('Cannot display IP Header!')
 
 print()
 byteFile.close()
