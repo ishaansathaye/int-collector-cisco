@@ -104,10 +104,26 @@ class VXLAN():
 
 #INT - 05 value for next protocol
 class INT():
-    pass
+    intFrame = hexStream[100:16]
+    intType = bcolors.HEADER + intFrame[0:2] + bcolors.ENDC
+    intReserved = bcolors.OKBLUE + intFrame[2:4] + bcolors.ENDC
+    intLength = bcolors.OKGREEN + intFrame[4:6] + bcolors.ENDC
+    intNextProtocol = bcolors.WARNING + intFrame[6:8] + bcolors.ENDC
+    intVariableOptionData = intFrame[8:16]
+    def getMetadata(self):
+        return self.intVariableOptionData
+    def displayINT(self):
+        print()
+        print(bcolors.BOLD + "INT Frame: " + self.intType + " " + self.intReserved + " " + self.intLength + " " + 
+        self.intNextProtocol + " " + bcolors.FAIL + self.intVariableOptionData + bcolors.ENDC)
+        print("Type: " + self.intType)
+        print("Reserved: " + self.intReserved)
+        print("Length: " + self.intLength)
+        print("Next Protocol: " + self.intNextProtocol)
+        print("Variable Option Data: " + bcolors.FAIL + self.intVariableOptionData + bcolors.ENDC)
 
 #Packet Class inheriting
-class Packet(Ethernet, IP, UDP, VXLAN):
+class Packet(Ethernet, IP, UDP, VXLAN, INT):
     pass
     
 newPacket = Packet()
@@ -123,8 +139,8 @@ if typeField == '0800':
             newPacket.displayVXLAN()
             nextProtocol = newPacket.getNextProtocol()
             if nextProtocol == "05":
-                print()
-                print("INT header exists!")
+                newPacket.displayINT()
+                variableOptionData = newPacket.getMetadata()
             else:
                 print()
                 print("Cannot display INT Header!")
