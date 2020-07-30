@@ -104,7 +104,7 @@ class VXLAN():
 
 #INT - 05 value for next protocol
 class INT():
-    intFrame = hexStream[100:16]
+    intFrame = hexStream[100:116]
     intType = bcolors.HEADER + intFrame[0:2] + bcolors.ENDC
     intReserved = bcolors.OKBLUE + intFrame[2:4] + bcolors.ENDC
     intLength = bcolors.OKGREEN + intFrame[4:6] + bcolors.ENDC
@@ -122,8 +122,21 @@ class INT():
         print("Next Protocol: " + self.intNextProtocol)
         print("Variable Option Data: " + bcolors.FAIL + self.intVariableOptionData + bcolors.ENDC)
 
+class INTMetadata():
+    intMetadataHeader = hexStream[116:132]
+    # metaFlags = bcolors.HEADER + intMetadataHeader[0:2] + bcolors.ENDC
+    # metaInstrCnt = bcolors.HEADER + intMetadataHeader[0:2] + bcolors.ENDC
+    # maxHopCnt = bcolors.OKBLUE + intMetadataHeader[2:4] + bcolors.ENDC
+    # totalHopCnt = bcolors.OKGREEN + intMetadataHeader[4:6] + bcolors.ENDC
+    meaInstrBit = bcolors.HEADER + intMetadataHeader[12:14] + bcolors.ENDC
+    metaReserved = bcolors.HEADER + intMetadataHeader[14:16] + bcolors.ENDC
+    def getMetadataStack():
+        pass
+    def displayINTMetadata():
+        pass
+
 #Packet Class inheriting
-class Packet(Ethernet, IP, UDP, VXLAN, INT):
+class Packet(Ethernet, IP, UDP, VXLAN, INT, INTMetadata):
     pass
     
 newPacket = Packet()
