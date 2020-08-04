@@ -125,47 +125,57 @@ class INT():
 class INTMetadata():
     intMetadataHeader = hexStream[116:132]
     # metaFlags = bcolors.HEADER + intMetadataHeader[0:2] + bcolors.ENDC
-    # metaInstrCnt = bcolors.HEADER + intMetadataHeader[0:2] + bcolors.ENDC
-    # maxHopCnt = bcolors.OKBLUE + intMetadataHeader[2:4] + bcolors.ENDC
-    # totalHopCnt = bcolors.OKGREEN + intMetadataHeader[4:6] + bcolors.ENDC
-    meaInstrBit = bcolors.HEADER + intMetadataHeader[12:14] + bcolors.ENDC
-    metaReserved = bcolors.HEADER + intMetadataHeader[14:16] + bcolors.ENDC
-    def getMetadataStack():
-        pass
-    def displayINTMetadata():
+    # metaInstrCnt = intMetadataHeader[0:2]
+    maxHopCnt = bcolors.OKGREEN + intMetadataHeader[4:6] + bcolors.ENDC
+    totalHopCnt = intMetadataHeader[6:8]
+    metaInstrBit = bcolors.FAIL + intMetadataHeader[8:12] + bcolors.ENDC
+    metaReserved = bcolors.HEADER + intMetadataHeader[12:16] + bcolors.ENDC
+    def displayINTMetadata(self):
+        print(bcolors.BOLD + "INT Metadata Header: " + bcolors.ENDC + " " + self.maxHopCnt + " " + bcolors.WARNING + 
+        self.totalHopCnt + bcolors.ENDC + " " + self.metaInstrBit + " " + self.metaReserved)
+        # print("Flags: " + self.metaFalgs) 
+        # print("Instruction Count: " + bcolors.OKBLUE + self.metaInstrCnt + bcolors.ENDC)
+        print("Max Hop Count: " + self.maxHopCnt)
+        print("Total Hop Count: " + bcolors.WARNING + self.totalHopCnt + bcolors.ENDC)
+        print("Instruction Bitmap: " + self.intNextProtocol)
+        print("Reserved: " + self.metaReserved)
+    def displayINTMetadataStack(self):
         pass
 
 #Packet Class inheriting
 class Packet(Ethernet, IP, UDP, VXLAN, INT, INTMetadata):
     pass
     
-newPacket = Packet()
-typeField = newPacket.getTypeFieldIP()
-newPacket.displayEthernet()
-if typeField == '0800':
-    newPacket.displayIP()
-    ipProtocol = newPacket.getIPProtocol()
-    if ipProtocol == '11':
-        newPacket.displayUDP()
-        destinationUDP = newPacket.getDestinationUDP()
-        if destinationUDP == "12b5":
-            newPacket.displayVXLAN()
-            nextProtocol = newPacket.getNextProtocol()
-            if nextProtocol == "05":
-                newPacket.displayINT()
-                variableOptionData = newPacket.getMetadata()
-            else:
-                print()
-                print("Cannot display INT Header!")
-        else:
-            print()
-            print("Cannot display VXLAN Header")
-    else:
-        print()
-        print("Cannot display UDP Header!")
-else:
-    print()
-    print('Cannot display IP Header!')
+# newPacket = Packet()
+# typeField = newPacket.getTypeFieldIP()
+# newPacket.displayEthernet()
+# if typeField == '0800':
+#     newPacket.displayIP()
+#     ipProtocol = newPacket.getIPProtocol()
+#     if ipProtocol == '11':
+#         newPacket.displayUDP()
+#         destinationUDP = newPacket.getDestinationUDP()
+#         if destinationUDP == "12b5":
+#             newPacket.displayVXLAN()
+#             nextProtocol = newPacket.getNextProtocol()
+#             if nextProtocol == "05":
+#                 newPacket.displayINT()
+#                 variableOptionData = newPacket.getMetadata()
+#                 print()
+#                 print("INT Header exists!")
+#             else:
+#                 print()
+#                 print("No INT Header!")
+#         else:
+#             print()
+#             print("Cannot display VXLAN Header")
+#     else:
+#         print()
+#         print("Cannot display UDP Header!")
+# else:
+#     print()
+#     print('Cannot display IP Header!')
 
-print()
-byteFile.close()
+# print()
+# byteFile.close()
+
