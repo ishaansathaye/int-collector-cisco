@@ -1,3 +1,5 @@
+import socket
+
 class bcolors:
     HEADER = '\033[95m'
     OKBLUE = '\033[94m'
@@ -145,37 +147,67 @@ class INTMetadata():
 #Packet Class inheriting
 class Packet(Ethernet, IP, UDP, VXLAN, INT, INTMetadata):
     pass
-    
-# newPacket = Packet()
-# typeField = newPacket.getTypeFieldIP()
-# newPacket.displayEthernet()
-# if typeField == '0800':
-#     newPacket.displayIP()
-#     ipProtocol = newPacket.getIPProtocol()
-#     if ipProtocol == '11':
-#         newPacket.displayUDP()
-#         destinationUDP = newPacket.getDestinationUDP()
-#         if destinationUDP == "12b5":
-#             newPacket.displayVXLAN()
-#             nextProtocol = newPacket.getNextProtocol()
-#             if nextProtocol == "05":
-#                 newPacket.displayINT()
-#                 variableOptionData = newPacket.getMetadata()
-#                 print()
-#                 print("INT Header exists!")
-#             else:
-#                 print()
-#                 print("No INT Header!")
-#         else:
-#             print()
-#             print("Cannot display VXLAN Header")
-#     else:
-#         print()
-#         print("Cannot display UDP Header!")
-# else:
-#     print()
-#     print('Cannot display IP Header!')
 
-# print()
-# byteFile.close()
+
+#Server
+localIP = "127.0.0.1"
+localPort = 20001
+bufferSize = 1024
+msgFromServer = "Hello UDP Client!"
+bytesToSend = str.encode(msgFromServer)
+# Create a datagram socket
+UDPServerSocket = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
+# Bind to address and ip
+UDPServerSocket.bind((localIP, localPort))
+print()
+print("Searching...")
+print()
+# Listen for incoming datagrams
+while(True):
+    bytesAddressPair = UDPServerSocket.recvfrom(bufferSize)
+    message = bytesAddressPair[0]
+    address = bytesAddressPair[1]
+    # clientMsg = "Message from Client:{}".format(message)
+    # clientIP  = "Client IP Address:{}".format(address)
+    print()
+    # msg = clientMsg.decode("utf-8")
+    print(message.decode("utf-8"))
+    # print(clientIP)
+    print()
+    break
+    # Sending a reply to client
+    # UDPServerSocket.sendto(bytesToSend, address)
+    
+newPacket = Packet()
+typeField = newPacket.getTypeFieldIP()
+newPacket.displayEthernet()
+if typeField == '0800':
+    newPacket.displayIP()
+    ipProtocol = newPacket.getIPProtocol()
+    if ipProtocol == '11':
+        newPacket.displayUDP()
+        destinationUDP = newPacket.getDestinationUDP()
+        if destinationUDP == "12b5":
+            newPacket.displayVXLAN()
+            nextProtocol = newPacket.getNextProtocol()
+            if nextProtocol == "05":
+                newPacket.displayINT()
+                variableOptionData = newPacket.getMetadata()
+                print()
+                print("INT Header exists!")
+            else:
+                print()
+                print("No INT Header!")
+        else:
+            print()
+            print("Cannot display VXLAN Header")
+    else:
+        print()
+        print("Cannot display UDP Header!")
+else:
+    print()
+    print('Cannot display IP Header!')
+
+print()
+byteFile.close()
 
