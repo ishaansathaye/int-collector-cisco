@@ -1,6 +1,6 @@
 import socket
 
-msgFromClient = "[UDP Packet with INT Packet]"
+msgFromClient = "080027f21d8c080027ae4d6208004500004ed998400040116f9ec0a8380bc0a8380c9bf412b5003a00000800000500007b00ffffffffffffba092b6ef8be08060001080006040001ba092b6ef8be0a0000010000000000000a000002"
 bytesToSend = str.encode(msgFromClient)
 serverAddressPort = ("127.0.0.1", 20001)
 bufferSize = 1024
@@ -14,3 +14,6 @@ UDPClientSocket.sendto(bytesToSend, serverAddressPort)
 # msgFromServer = UDPClientSocket.recvfrom(bufferSize)
 # msg = "Message from Server {}".format(msgFromServer[0])
 # print(msg)
+
+#Fabricate INT Packet on this
+# Packet = 080027f21d8c080027ae4d6208004500004ed998400040116f9ec0a8380bc0a8380c9bf412b5003a00000800000000007b00ffffffffffffba092b6ef8be08060001080006040001ba092b6ef8be0a0000010000000000000a000002

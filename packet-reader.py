@@ -1,4 +1,41 @@
 import socket
+from bitstring import BitArray, __version__
+#Server
+localIP = "127.0.0.1"
+localPort = 20001
+bufferSize = 1024
+# msgFromServer = "Hello UDP Client!"
+# bytesToSend = str.encode(msgFromServer)
+# Create a datagram socket
+UDPServerSocket = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
+# Bind to address and ip
+UDPServerSocket.bind((localIP, localPort))
+print()
+print("Searching...")
+print()
+# Listen for incoming datagrams
+while(True):
+    bytesAddressPair = UDPServerSocket.recvfrom(bufferSize)
+    message = bytesAddressPair[0]
+    address = bytesAddressPair[1]
+    # clientMsg = "Message from Client:{}".format(message)
+    # clientIP  = "Client IP Address:{}".format(address)
+    print()
+    msg = message.decode("utf-8")
+    # print(clientIP)
+    print()
+    break
+    # Sending a reply to client
+    # UDPServerSocket.sendto(bytesToSend, address)
+
+byteFile = open('byte-stream.txt', 'w')
+print()
+byteFile.write(msg)
+byteFile.close()
+global hexStream
+byteFileRead = open('byte-stream.txt', 'r')
+hexStream = byteFileRead.readline()
+
 
 class bcolors:
     HEADER = '\033[95m'
@@ -9,11 +46,6 @@ class bcolors:
     ENDC = '\033[0m'
     BOLD = '\033[1m'
     UNDERLINE = '\033[4m'
-
-byteFile = open('byte-streamVXLAN.txt', 'r')
-global hexStream
-hexStream = byteFile.readline()
-
 
 #Ethernet
 class Ethernet():   
@@ -27,9 +59,9 @@ class Ethernet():
         print()
         print(bcolors.BOLD + "Ethernet Frame: " + bcolors.ENDC + self.destinationEthernet + " " + 
         self.sourceEthernet + " " + bcolors.OKGREEN + self.typeFieldEthernet + bcolors.ENDC)
-        print("DMAC: " + self.destinationEthernet)
-        print("SMAC: " + self.sourceEthernet)
-        print("EType: " + bcolors.OKGREEN + self.typeFieldEthernet + bcolors.ENDC)
+        print("   DMAC: " + self.destinationEthernet)
+        print("   SMAC: " + self.sourceEthernet)
+        print("   EType: " + bcolors.OKGREEN + self.typeFieldEthernet + bcolors.ENDC)
 
 #IP
 class IP():    
@@ -51,19 +83,16 @@ class IP():
         print(bcolors.BOLD + "IP Frame: " + bcolors.ENDC + self.version_headerLength + " " + self.typeService + " " + self.totalLength 
         + " " + self.identification + " " + self.flags + " " + self.timeLive + " " + bcolors.OKBLUE + 
         self.ipProtocol + bcolors.ENDC + " " + self.headChecksum + " " + self.sourceIP + " " + self.destinationIP)
-        print("Version: " + self.version_headerLength)
-        print("Type of Service: " + self.typeService)
-        print("Total Length: " + self.totalLength)
-        print("Identification: " + self.identification)
-        print("Flags: " + self.flags)
-        print("Time to Live: " + self.timeLive)
-        print("Protocol: " + bcolors.OKBLUE + self.ipProtocol + bcolors.ENDC)
-        print("Header Checksum: " + self.headChecksum)
-        print("Source: " + self.sourceIP)
-        print("Destination: " + self.destinationIP)
-
-
-
+        print("   Version: " + self.version_headerLength)
+        print("   Type of Service: " + self.typeService)
+        print("   Total Length: " + self.totalLength)
+        print("   Identification: " + self.identification)
+        print("   Flags: " + self.flags)
+        print("   Time to Live: " + self.timeLive)
+        print("   Protocol: " + bcolors.OKBLUE + self.ipProtocol + bcolors.ENDC)
+        print("   Header Checksum: " + self.headChecksum)
+        print("   Source: " + self.sourceIP)
+        print("   Destination: " + self.destinationIP)
 
 #UDP
 class UDP():
@@ -78,11 +107,10 @@ class UDP():
         print()
         print(bcolors.BOLD + "UDP Frame: " + bcolors.ENDC + self.sourceUDP + " " + bcolors.OKBLUE + self.destinationUDP + 
         bcolors.ENDC + " " + self.lengthUDP + " " + self.udpChecksum)
-        print("Source: " + self.sourceUDP)
-        print("Destination: " + bcolors.OKBLUE + self.destinationUDP + bcolors.ENDC)
-        print("Length: " + self.lengthUDP)
-        print("UDP Checksum: " + self.udpChecksum)
-
+        print("   Source: " + self.sourceUDP)
+        print("   Destination: " + bcolors.OKBLUE + self.destinationUDP + bcolors.ENDC)
+        print("   Length: " + self.lengthUDP)
+        print("   UDP Checksum: " + self.udpChecksum)
 
 #VXLAN - based on VXLAN GPE Header
 class VXLAN():
@@ -98,11 +126,11 @@ class VXLAN():
         print()
         print(bcolors.BOLD + "VXLAN Frame: " + self.vxlan_Flags + " " + self.vxlan_Reserved1 + " " + bcolors.OKGREEN
         + self.nextProtocol + bcolors.ENDC + " " + self.vni + " " + self.vxlan_Reserved2)
-        print("Flags: " + self.vxlan_Flags)
-        print("Reserved: " + self.vxlan_Reserved1)
-        print("Next Protocol: " + bcolors.OKGREEN + self.nextProtocol + bcolors.ENDC)
-        print("VNI: " + self.vni)
-        print("Reserved: " + self.vxlan_Reserved2)
+        print("   Flags: " + self.vxlan_Flags)
+        print("   Reserved: " + self.vxlan_Reserved1)
+        print("   Next Protocol: " + bcolors.OKGREEN + self.nextProtocol + bcolors.ENDC)
+        print("   VNI: " + self.vni)
+        print("   Reserved: " + self.vxlan_Reserved2)
 
 #INT - 05 value for next protocol
 class INT():
@@ -118,29 +146,50 @@ class INT():
         print()
         print(bcolors.BOLD + "INT Frame: " + self.intType + " " + self.intReserved + " " + self.intLength + " " + 
         self.intNextProtocol + " " + bcolors.FAIL + self.intVariableOptionData + bcolors.ENDC)
-        print("Type: " + self.intType)
-        print("Reserved: " + self.intReserved)
-        print("Length: " + self.intLength)
-        print("Next Protocol: " + self.intNextProtocol)
-        print("Variable Option Data: " + bcolors.FAIL + self.intVariableOptionData + bcolors.ENDC)
+        print("   Type: " + self.intType)
+        print("   Reserved: " + self.intReserved)
+        print("   Length: " + self.intLength)
+        print("   Next Protocol: " + self.intNextProtocol)
+        print("   Variable Option Data: " + bcolors.FAIL + self.intVariableOptionData + bcolors.ENDC)
 
 class INTMetadata():
     intMetadataHeader = hexStream[116:132]
-    # metaFlags = bcolors.HEADER + intMetadataHeader[0:2] + bcolors.ENDC
-    # metaInstrCnt = intMetadataHeader[0:2]
+    
+    irreg = intMetadataHeader[0:4]
+    inputString = irreg
+    convert = BitArray(hex=inputString)
+    flagBits = convert.bin
+    # metaFlags = bcolors.HEADER + flagBits[0:11] + bcolors.ENDC
+    versionBits = bcolors.OKBLUE + flagBits[0:2] + bcolors.ENDC
+    replication = bcolors.OKGREEN + flagBits[2:4] + bcolors.ENDC
+    copyBits = bcolors.WARNING + flagBits[4:5] + bcolors.ENDC
+    maxHopCntExceeded = bcolors.FAIL + flagBits[5:6] + bcolors.ENDC
+    reservedBits = bcolors.HEADER + flagBits[6:11] + bcolors.ENDC
+
+    metaInstrCnt = flagBits[11:16]
     maxHopCnt = bcolors.OKGREEN + intMetadataHeader[4:6] + bcolors.ENDC
     totalHopCnt = intMetadataHeader[6:8]
     metaInstrBit = bcolors.FAIL + intMetadataHeader[8:12] + bcolors.ENDC
     metaReserved = bcolors.HEADER + intMetadataHeader[12:16] + bcolors.ENDC
     def displayINTMetadata(self):
-        print(bcolors.BOLD + "INT Metadata Header: " + bcolors.ENDC + " " + self.maxHopCnt + " " + bcolors.WARNING + 
-        self.totalHopCnt + bcolors.ENDC + " " + self.metaInstrBit + " " + self.metaReserved)
-        # print("Flags: " + self.metaFalgs) 
-        # print("Instruction Count: " + bcolors.OKBLUE + self.metaInstrCnt + bcolors.ENDC)
-        print("Max Hop Count: " + self.maxHopCnt)
-        print("Total Hop Count: " + bcolors.WARNING + self.totalHopCnt + bcolors.ENDC)
-        print("Instruction Bitmap: " + self.intNextProtocol)
-        print("Reserved: " + self.metaReserved)
+        print(bcolors.BOLD + "INT Metadata Header: " + bcolors.ENDC + " " + self.versionBits + self.replication + 
+        self.copyBits + self.maxHopCntExceeded + self.reservedBits + " " + bcolors.OKBLUE + self.metaInstrCnt + 
+        bcolors.ENDC + " " + self.maxHopCnt + " " + bcolors.WARNING + self.totalHopCnt + bcolors.ENDC + " " + 
+        self.metaInstrBit + " " + self.metaReserved)
+        
+        print("   Flags(Bits): " + self.versionBits + " " + self.replication + " " + self.copyBits + " " + self.maxHopCntExceeded 
+        + " " + self.reservedBits)
+        print("      Version(Bits): " + self.versionBits)
+        print("      Replication(Bits): " + self.replication)
+        print("      Copy(Bits): " + self.copyBits)
+        print("      Max Hop Count Exceeded(Bits): " + self.maxHopCntExceeded)
+        print("      Reserved Bits(Bits): " + self.reservedBits) 
+        
+        print("   Instruction Count: " + bcolors.OKBLUE + self.metaInstrCnt + bcolors.ENDC)
+        print("   Max Hop Count: " + self.maxHopCnt)
+        print("   Total Hop Count: " + bcolors.WARNING + self.totalHopCnt + bcolors.ENDC)
+        print("   Instruction Bitmap: " + self.intNextProtocol)
+        print("   Reserved: " + self.metaReserved)
     def displayINTMetadataStack(self):
         pass
 
@@ -149,35 +198,9 @@ class Packet(Ethernet, IP, UDP, VXLAN, INT, INTMetadata):
     pass
 
 
-#Server
-localIP = "127.0.0.1"
-localPort = 20001
-bufferSize = 1024
-msgFromServer = "Hello UDP Client!"
-bytesToSend = str.encode(msgFromServer)
-# Create a datagram socket
-UDPServerSocket = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
-# Bind to address and ip
-UDPServerSocket.bind((localIP, localPort))
-print()
-print("Searching...")
-print()
-# Listen for incoming datagrams
-while(True):
-    bytesAddressPair = UDPServerSocket.recvfrom(bufferSize)
-    message = bytesAddressPair[0]
-    address = bytesAddressPair[1]
-    # clientMsg = "Message from Client:{}".format(message)
-    # clientIP  = "Client IP Address:{}".format(address)
-    print()
-    # msg = clientMsg.decode("utf-8")
-    print(message.decode("utf-8"))
-    # print(clientIP)
-    print()
-    break
-    # Sending a reply to client
-    # UDPServerSocket.sendto(bytesToSend, address)
-    
+
+
+#Parsing INT Packet   
 newPacket = Packet()
 typeField = newPacket.getTypeFieldIP()
 newPacket.displayEthernet()
@@ -195,6 +218,8 @@ if typeField == '0800':
                 variableOptionData = newPacket.getMetadata()
                 print()
                 print("INT Header exists!")
+                print()
+                newPacket.displayINTMetadata()
             else:
                 print()
                 print("No INT Header!")
@@ -209,5 +234,3 @@ else:
     print('Cannot display IP Header!')
 
 print()
-byteFile.close()
-
