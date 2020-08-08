@@ -12,12 +12,12 @@ class bcolors:
     BOLD = '\033[1m'
     UNDERLINE = '\033[4m'
 
+localPort = input("Enter UDP Port Number: ")
+
 #Server
 localIP = "127.0.0.1"
-localPort = 20001
+# localPort = 20001
 bufferSize = 1024
-# msgFromServer = "Hello UDP Client!"
-# bytesToSend = str.encode(msgFromServer)
 # Create a datagram socket
 UDPServerSocket = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
 # Bind to address and ip
