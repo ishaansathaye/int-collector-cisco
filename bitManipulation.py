@@ -46,3 +46,10 @@
 
 # newperson = class4()
 # print(newperson.shownum())
+
+binary_string = "01110"
+
+decimal_representation = int(binary_string, 2)
+hexadecimal_string = hex(decimal_representation)
+
+print(hexadecimal_string[2:])

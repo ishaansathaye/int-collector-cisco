@@ -12,9 +12,23 @@ class bcolors:
     BOLD = '\033[1m'
     UNDERLINE = '\033[4m'
 
+def bits2hex(bits):
+    decimal_representation = int(bits, 2)
+    hexadecimal_string = hex(decimal_representation)
+    return hexadecimal_string[2:]
+
+def hex2bits(hexString):
+    convert = BitArray(hex=hexString)
+    bit_string = convert.bin
+    return bit_string
+
+def hex2dec(hexCode):
+    decimal_string = int(hexCode, 16)
+    return decimal_string
+
 print()
 localPort = int(input("Enter UDP Port Number: "))
-startHeader = input("What is the ")
+# startHeader = input("What is the starting header?: ")
 file_out = input("Output Filename(No extension): ")
 if file_out == None:
     file_out == "output_INT"
@@ -174,17 +188,31 @@ class INTMetadata():
         self.maxHopCntExceeded = self.flagBits[5:6]
         self.reservedBits = self.flagBits[6:11]
 
-        self.metaInstrCnt = self.flagBits[11:16]
+        self.metaInstrCnt = bits2hex(self.flagBits[11:16])
+        
         self.maxHopCnt = self.intMetadataHeader[4:6]
+
         self.totalHopCnt = self.intMetadataHeader[6:8]
-        self.metaInstrBit = self.intMetadataHeader[8:12]
+        self.totalHopCntDec = hex2dec(self.intMetadataHeader[6:8])
+
+        self.metaInstrBitmapBits = hex2bits(self.intMetadataHeader[8:12])
+        self.metaSwitchID = self.metaInstrBitmapBits[0]
+        self.metaIngressPortID = self.metaInstrBitmapBits[1]
+        self.metaHopLatency = self.metaInstrBitmapBits[2]
+        self.metaQueueOcc = self.metaInstrBitmapBits[3]
+        self.metaIngressTime = self.metaInstrBitmapBits[4]
+        self.metaEgressPortID = self.metaInstrBitmapBits[5]
+        self.metaQueueCongestion = self.metaInstrBitmapBits[6]
+        self.metaEgressPortTX = self.metaInstrBitmapBits[7]
+        self.metaReservedBits = self.metaInstrBitmapBits[8:16]
+
         self.metaReserved = self.intMetadataHeader[12:16]
     
     def displayINTMetadata(self):
         outputFile.writelines('\n')
         outputFile.writelines("INT Metadata Header: " + " " + self.versionBits + self.replication + 
         self.copyBits + self.maxHopCntExceeded + self.reservedBits + " " + self.metaInstrCnt + 
-        " " + self.maxHopCnt + " " + self.totalHopCnt + " " + self.metaInstrBit + " " + self.metaReserved + '\n')
+        " " + self.maxHopCnt + " " + self.totalHopCnt + " " + self.metaInstrBitmapBits + " " + self.metaReserved + '\n')
         
         outputFile.writelines("   Flags(Bits): " + self.versionBits + " " + self.replication + " " + self.copyBits + " " + self.maxHopCntExceeded 
         + " " + self.reservedBits + '\n')
@@ -196,8 +224,19 @@ class INTMetadata():
         
         outputFile.writelines("   Instruction Count: " + self.metaInstrCnt + '\n')
         outputFile.writelines("   Max Hop Count: " + self.maxHopCnt + '\n')
-        outputFile.writelines("   Total Hop Count: " + self.totalHopCnt + '\n')
-        outputFile.writelines("   Instruction Bitmap: " + self.intNextProtocol + '\n')
+        outputFile.writelines("   Total Hop Count: " + self.totalHopCnt + " " + str(self.totalHopCntDec) + '\n')
+        outputFile.writelines("   Instruction Bitmap: " + self.metaSwitchID + self.metaIngressPortID + self.metaHopLatency + self.metaQueueOcc +
+        " " + self.metaIngressTime + self.metaEgressPortID + self.metaQueueCongestion + self.metaEgressPortTX + " " + 
+        self.metaInstrBitmapBits[8:12] + " " + self.metaInstrBitmapBits[12:16] + '\n')
+        outputFile.writelines("      Bit 0 Switch ID: " + self.metaSwitchID + '\n')
+        outputFile.writelines("      Bit 1 Ingress Port ID: " + self.metaIngressPortID + '\n')
+        outputFile.writelines("      Bit 2 Hop Latency: " + self.metaHopLatency + '\n')
+        outputFile.writelines("      Bit 3 Queue Occupancy: " + self.metaQueueOcc + '\n')
+        outputFile.writelines("      Bit 4 Ingress Timestamp: " + self.metaIngressTime + '\n')
+        outputFile.writelines("      Bit 5 Egress Port ID: " + self.metaEgressPortID + '\n')
+        outputFile.writelines("      Bit 6 Queue Congestion Status: " + self.metaQueueCongestion + '\n')
+        outputFile.writelines("      Bit 7 Egress Port TX Utilization: " + self.metaEgressPortTX + '\n')
+        outputFile.writelines("      Bit 8-16 Reserved Bits: " + self.metaReservedBits + '\n')
         outputFile.writelines("   Reserved: " + self.metaReserved + '\n')
     
     def displayINTMetadataStack(self):
