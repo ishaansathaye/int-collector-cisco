@@ -227,7 +227,7 @@ while(True):
     byteFileRead = open('byte-stream.txt', 'r')
     hexStream = byteFileRead.readline()
 
-    outputFile = open(file_out, "a")
+    outputFile = open("INT Output Files/"+file_out, "a")
     outputFile.truncate(0)
     outputFile.writelines("Packet: " + hexStream + '\n')
 
