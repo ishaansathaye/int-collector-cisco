@@ -14,6 +14,7 @@ class bcolors:
 
 print()
 localPort = int(input("Enter UDP Port Number: "))
+startHeader = input("What is the ")
 file_out = input("Output Filename(No extension): ")
 if file_out == None:
     file_out == "output_INT"
@@ -103,7 +104,7 @@ class udp():
     def displayUDP(self):
         outputFile.writelines('\n')
         outputFile.writelines("UDP Frame: " + self.sourceUDP + " " + self.destinationUDP + 
-        bcolors.ENDC + " " + self.lengthUDP + " " + self.udpChecksum + '\n')
+        " " + self.lengthUDP + " " + self.udpChecksum + '\n')
         outputFile.writelines("   Source: " + self.sourceUDP + '\n')
         outputFile.writelines("   Destination: " + self.destinationUDP + '\n')
         outputFile.writelines("   Length: " + self.lengthUDP + '\n')
@@ -262,7 +263,7 @@ while(True):
         outputFile.writelines('\n')
         outputFile.writelines('Cannot display IP Header!' + '\n')
     print()
-    print(file_out + ".txt" + " is ready!")
+    print(file_out + " is ready!")
     outputFile.writelines('\n')
     byteFile.close()
     outputFile.close()
