@@ -28,6 +28,9 @@ def hex2dec(hexCode):
 
 print()
 localPort = int(input("Enter UDP Port Number: "))
+# startHeader = input("What is the starting header?(Eth-1, IP-2, UDP-3, VXLAN-4, INT-5): ")
+# transport = input("What mode of transport? (UDP Default, TCP...): ")
+# if not then transport not supported
 file_out = input("Output Filename(No extension): ")
 if file_out == None:
     file_out == "output_INT"
@@ -66,6 +69,13 @@ class Ethernet():
         outputFile.writelines("   SMAC: " + self.sourceEthernet + '\n')
         outputFile.writelines("   EType: " + self.typeFieldEthernet + '\n')
 
+        print()
+        print(bcolors.BOLD + "Ethernet Frame: " + bcolors.ENDC + bcolors.HEADER + self.destinationEthernet + bcolors.ENDC + " " + 
+        bcolors.OKBLUE + self.sourceEthernet + bcolors.ENDC + " " + bcolors.OKGREEN + self.typeFieldEthernet + bcolors.ENDC)
+        print("   DMAC: " + bcolors.HEADER + self.destinationEthernet + bcolors.ENDC)
+        print("   SMAC: " + bcolors.OKBLUE + self.sourceEthernet + bcolors.ENDC)
+        print("   EType: " + bcolors.OKGREEN + self.typeFieldEthernet + bcolors.ENDC)
+
 #IP
 class ip():
 
@@ -100,6 +110,24 @@ class ip():
         outputFile.writelines("   Header Checksum: " + self.headChecksum + '\n')
         outputFile.writelines("   Source: " + self.sourceIP + '\n')
         outputFile.writelines("   Destination: " + self.destinationIP + '\n')
+
+        print()
+        print(bcolors.BOLD + "IP Frame: " + bcolors.ENDC + bcolors.HEADER + self.version_headerLength + bcolors.ENDC 
+        + " " + bcolors.OKBLUE + self.typeService + bcolors.ENDC + " " + bcolors.OKGREEN + self.totalLength + bcolors.ENDC 
+        + " " + bcolors.WARNING + self.identification + bcolors.ENDC + " " + bcolors.FAIL + self.flags + bcolors.ENDC 
+        + " " + bcolors.HEADER + self.timeLive + bcolors.ENDC + " " + bcolors.OKBLUE + self.ipProtocol + bcolors.ENDC + " " 
+        + bcolors.OKGREEN + self.headChecksum + bcolors.ENDC + " " + bcolors.WARNING + self.sourceIP + bcolors.ENDC + " " 
+        + bcolors.FAIL + self.destinationIP + bcolors.ENDC)
+        print("   Version: " + bcolors.HEADER + self.version_headerLength + bcolors.ENDC)
+        print("   Type of Service: " + bcolors.OKBLUE + self.typeService + bcolors.ENDC)
+        print("   Total Length: " + bcolors.OKGREEN + self.totalLength + bcolors.ENDC)
+        print("   Identification: " + bcolors.WARNING + self.identification + bcolors.ENDC)
+        print("   Flags: " + bcolors.FAIL + self.flags + bcolors.ENDC)
+        print("   Time to Live: " + bcolors.HEADER + self.timeLive + bcolors.ENDC)
+        print("   Protocol: " + bcolors.OKBLUE + self.ipProtocol + bcolors.ENDC)
+        print("   Header Checksum: " + bcolors.OKGREEN + self.headChecksum + bcolors.ENDC)
+        print("   Source: " + bcolors.WARNING + self.sourceIP + bcolors.ENDC)
+        print("   Destination: " + bcolors.FAIL + self.destinationIP + bcolors.ENDC)
 
 #UDP
 class udp():
