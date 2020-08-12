@@ -28,7 +28,6 @@ def hex2dec(hexCode):
 
 print()
 localPort = int(input("Enter UDP Port Number: "))
-# startHeader = input("What is the starting header?: ")
 file_out = input("Output Filename(No extension): ")
 if file_out == None:
     file_out == "output_INT"
@@ -304,6 +303,7 @@ while(True):
     outputFile.writelines("Packet: " + hexStream[0:80] + '\n')
     outputFile.writelines(hexStream[80:160] + '\n')
     outputFile.writelines(hexStream[160:240] + '\n')
+    outputFile.writelines(hexStream[240:320] + '\n')
 
     #Parsing INT Packet   
     newPacket = Packet()
