@@ -224,8 +224,8 @@ class INTMetadata():
         
         outputFile.writelines("   Instruction Count: " + self.metaInstrCnt + '\n')
         outputFile.writelines("   Max Hop Count: " + self.maxHopCnt + '\n')
-        outputFile.writelines("   Total Hop Count: " + self.totalHopCnt + " " + str(self.totalHopCntDec) + '\n')
-        outputFile.writelines("   Instruction Bitmap: " + self.metaSwitchID + self.metaIngressPortID + self.metaHopLatency + self.metaQueueOcc +
+        outputFile.writelines("   Total Hop Count: " + self.totalHopCnt + '\n')
+        outputFile.writelines("   Instruction Bitmap(Bits): " + self.metaSwitchID + self.metaIngressPortID + self.metaHopLatency + self.metaQueueOcc +
         " " + self.metaIngressTime + self.metaEgressPortID + self.metaQueueCongestion + self.metaEgressPortTX + " " + 
         self.metaInstrBitmapBits[8:12] + " " + self.metaInstrBitmapBits[12:16] + '\n')
         outputFile.writelines("      Bit 0 Switch ID: " + self.metaSwitchID + '\n')
@@ -240,7 +240,40 @@ class INTMetadata():
         outputFile.writelines("   Reserved: " + self.metaReserved + '\n')
     
     def displayINTMetadataStack(self):
-        pass
+        outputFile.writelines('\n')
+        count = self.metaInstrBitmapBits.count('1', 0, 7)
+        totalParsing = (count*self.totalHopCntDec)*8
+        self.intMetadataHeaderStack = hexStream[132:totalParsing+132]
+        tempStacList = self.intMetadataHeaderStack
+
+        outputFile.writelines("INT Metadata Stack: " + self.intMetadataHeaderStack + '\n')
+        # outputFile.writelines("Count: " + str(count) + " " "totalParsing: " + str(totalParsing) + '\n')
+        for i in range(self.totalHopCntDec, 0, -1):
+            outputFile.write("   Hop " + str(i) + ":" + '\n')
+            if self.metaSwitchID == '1':
+                outputFile.writelines("      Switch ID: " + tempStacList[0:8] + '\n')
+                tempStacList = tempStacList.replace(tempStacList[0:8], "")
+            if self.metaIngressPortID == '1':
+                outputFile.writelines("      Ingress Port ID: " + tempStacList[0:8] + '\n')
+                tempStacList = tempStacList.replace(tempStacList[0:8], "")
+            if self.metaHopLatency == '1':
+                outputFile.writelines("      Hop Latency: " + tempStacList[0:8] + '\n')
+                tempStacList = tempStacList.replace(tempStacList[0:8], "")
+            if self.metaQueueOcc == '1':
+                outputFile.writelines("      Queue Occupancy: " + tempStacList[0:8] + '\n')
+                tempStacList = tempStacList.replace(tempStacList[0:8], "")
+            if self.metaIngressTime == '1':
+                outputFile.writelines("      Ingress Timestamp: " + tempStacList[0:8] + '\n')
+                tempStacList = tempStacList.replace(tempStacList[0:8], "")
+            if self.metaEgressPortID == '1':
+                outputFile.writelines("      Egress Port ID: " + tempStacList[0:8] + '\n')
+                tempStacList = tempStacList.replace(tempStacList[0:8], "")
+            if self.metaQueueCongestion == '1':
+                outputFile.writelines("      Queue Congestation Status: " + tempStacList[0:8] + '\n')
+                tempStacList = tempStacList.replace(tempStacList[0:8], "")
+            if self.metaEgressPortTX == '1':
+                outputFile.writelines("      Egress Port TX Utilization: " + tempStacList[0:8] + '\n')
+                tempStacList = tempStacList.replace(tempStacList[0:8], "")
 
 #Packet Class inheriting
 class Packet(Ethernet, ip, udp, vxlan, intHeader, INTMetadata):
@@ -268,7 +301,9 @@ while(True):
 
     outputFile = open("INT Output Files/"+file_out, "a")
     outputFile.truncate(0)
-    outputFile.writelines("Packet: " + hexStream + '\n')
+    outputFile.writelines("Packet: " + hexStream[0:80] + '\n')
+    outputFile.writelines(hexStream[80:160] + '\n')
+    outputFile.writelines(hexStream[160:240] + '\n')
 
     #Parsing INT Packet   
     newPacket = Packet()
@@ -289,6 +324,7 @@ while(True):
                     newPacket.displayINT()
                     variableOptionData = newPacket.getMetadata()
                     newPacket.displayINTMetadata()
+                    newPacket.displayINTMetadataStack()
                 else:
                     outputFile.writelines('\n')
                     outputFile.writelines("No INT Header!" + '\n')
@@ -303,6 +339,7 @@ while(True):
         outputFile.writelines('Cannot display IP Header!' + '\n')
     print()
     print(file_out + " is ready!")
+    print()
     outputFile.writelines('\n')
     byteFile.close()
     outputFile.close()

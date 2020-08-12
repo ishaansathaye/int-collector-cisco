@@ -47,9 +47,14 @@
 # newperson = class4()
 # print(newperson.shownum())
 
-binary_string = "01110"
+# binary_string = "01110"
 
-decimal_representation = int(binary_string, 2)
-hexadecimal_string = hex(decimal_representation)
+# decimal_representation = int(binary_string, 2)
+# hexadecimal_string = hex(decimal_representation)
 
-print(hexadecimal_string[2:])
+# print(hexadecimal_string[2:])
+
+sample = 'askrguoyghsofurisalsdjflasdjfowiehgoeihgoasdjfaosjfoiwehfgoejfosjdfjasleihfgoahergoajsdifjalsdjfoaiehrgoasidlasjdlfjoifyhsoeugrigur'
+print(len(sample))
+print(sample[0:80])
+print(sample[80:160])

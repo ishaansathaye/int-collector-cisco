@@ -1,4 +1,6 @@
-Packet: 080027f21d8c080027ae4d6208004500004ed998400040116f9ec0a8380bc0a8380c9bf412b5003a00000800000500007b00ffffffffffffba092b6ef8be08060001080006040001ba092b6ef8030a0000010000000000000a000002
+Packet: 080027f21d8c080027ae4d6208004500004ed998400040116f9ec0a8380bc0a8380c9bf412b5003a
+00000800000500007b00ffffffffffffba092b6ef80308060001080006040001ba092b6ef8030a00
+00010000000000000a000002
 
 Ethernet Frame: 080027f21d8c 080027ae4d62 0800
    DMAC: 080027f21d8c
@@ -39,7 +41,7 @@ INT Frame: ff ff ff ff ffffba09
    Next Protocol: ff
    Variable Option Data: ffffba09
 
-INT Metadata Header:  00101011011 e f8 be 0000100000000110 0001
+INT Metadata Header:  00101011011 e f8 03 0000100000000110 0001
    Flags(Bits): 00 10 1 0 11011
       Version(Bits): 00
       Replication(Bits): 10
@@ -48,8 +50,8 @@ INT Metadata Header:  00101011011 e f8 be 0000100000000110 0001
       Reserved Bits(Bits): 11011
    Instruction Count: e
    Max Hop Count: f8
-   Total Hop Count: be 190
-   Instruction Bitmap: 0000 1000 0000 0110
+   Total Hop Count: 03
+   Instruction Bitmap(Bits): 0000 1000 0000 0110
       Bit 0 Switch ID: 0
       Bit 1 Ingress Port ID: 0
       Bit 2 Hop Latency: 0
@@ -60,4 +62,12 @@ INT Metadata Header:  00101011011 e f8 be 0000100000000110 0001
       Bit 7 Egress Port TX Utilization: 0
       Bit 8-16 Reserved Bits: 00000110
    Reserved: 0001
+
+INT Metadata Stack: 080006040001ba092b6ef803
+   Hop 3:
+      Ingress Timestamp: 08000604
+   Hop 2:
+      Ingress Timestamp: 0001ba09
+   Hop 1:
+      Ingress Timestamp: 2b6ef803
 
