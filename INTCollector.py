@@ -28,12 +28,12 @@ def hex2dec(hexCode):
 
 print()
 startHeader = '0'
-# stackEnding = 0
-# startingINTHeader = 0
-# endingINTHeader = 0
-# startingINTMetadataHeader = 0
-# endingINTMetadataHeader = 0
-# startingStack = 0
+stackEnding = 0
+startingINTHeader = 0
+endingINTHeader = 0
+startingINTMetadataHeader = 0
+endingINTMetadataHeader = 0
+startingStack = 0
 transport = input("What mode of transport?(UDP-1, TCP-2, Other-3): ")
 
 if transport == '1':
