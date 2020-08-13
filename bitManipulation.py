@@ -54,7 +54,14 @@
 
 # print(hexadecimal_string[2:])
 
-sample = 'askrguoyghsofurisalsdjflasdjfowiehgoeihgoasdjfaosjfoiwehfgoejfosjdfjasleihfgoahergoajsdifjalsdjfoaiehrgoasidlasjdlfjoifyhsoeugrigur'
-print(len(sample))
-print(sample[0:80])
-print(sample[80:160])
+# sample = 'askrguoyghsofurisalsdjflasdjfowiehgoeihgoasdjfaosjfoiwehfgoejfosjdfjasleihfgoahergoajsdifjalsdjfoaiehrgoasidlasjdlfjoifyhsoeugrigur'
+# print(len(sample))
+# print(sample[0:80])
+# print(sample[80:160])
+
+def thing():
+    asdf = 1
+    print('hello')
+    return asdf
+def otherthing():
+    pass
