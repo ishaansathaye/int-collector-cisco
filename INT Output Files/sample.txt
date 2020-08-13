@@ -4,8 +4,8 @@ Packet: 080027f21d8c080027ae4d6208004500004ed998400040116f9ec0a8380bc0a8380c9bf4
 
 
 Ethernet Frame: 080027f21d8c 080027ae4d62 0800
-   DMAC: 080027f21d8c
-   SMAC: 080027ae4d62
+   DMAC: 08:00:27:f2:1d:8c
+   SMAC: 08:00:27:ae:4d:62
    EType: 0800
 
 IP Frame: 45 00 004e d998 4000 40 11 6f9e c0a8380b c0a8380c
@@ -17,8 +17,8 @@ IP Frame: 45 00 004e d998 4000 40 11 6f9e c0a8380b c0a8380c
    Time to Live: 40
    Protocol: 11
    Header Checksum: 6f9e
-   Source: c0a8380b
-   Destination: c0a8380c
+   Source: 11.56.168.192
+   Destination: 12.56.168.192
 
 UDP Frame: 9bf4 12b5 003a 0000
    Source: 9bf4

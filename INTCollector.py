@@ -1,5 +1,6 @@
 import socket
 from bitstring import BitArray, __version__
+import struct
 
 #Color-coding
 class bcolors:
@@ -26,14 +27,27 @@ def hex2dec(hexCode):
     decimal_string = int(hexCode, 16)
     return decimal_string
 
+def hex2dotted(hexWord):
+    addr_long = int(hexWord, 16)
+    dottedFormat = socket.inet_ntoa(struct.pack("<L", addr_long))
+    return dottedFormat
+
 print()
 startHeader = '0'
+global stackEnding
+global startingINTHeader
+global endingINTHeader
+global startingINTMetadataHeader
+global endingINTMetadataHeader
+global continueStack
+continueStack = False
 stackEnding = 0
 startingINTHeader = 0
 endingINTHeader = 0
 startingINTMetadataHeader = 0
 endingINTMetadataHeader = 0
 startingStack = 0
+nextProtocolINT = '05'
 transport = input("What mode of transport?(UDP-1, TCP-2, Other-3): ")
 
 if transport == '1':
@@ -90,15 +104,21 @@ class Ethernet():
         outputFile.writelines('\n')
         outputFile.writelines("Ethernet Frame: " + self.destinationEthernet + " " + 
         self.sourceEthernet + " " + self.typeFieldEthernet + '\n')
-        outputFile.writelines("   DMAC: " + self.destinationEthernet + '\n')
-        outputFile.writelines("   SMAC: " + self.sourceEthernet + '\n')
+        outputFile.writelines("   DMAC: " + self.destinationEthernet[0:2] + ":" + self.destinationEthernet[2:4] 
+        + ":" + self.destinationEthernet[4:6] + ":" + self.destinationEthernet[6:8] + ":" + self.destinationEthernet[8:10] 
+        + ":" + self.destinationEthernet[10:12] + '\n')
+        outputFile.writelines("   SMAC: " + self.sourceEthernet[0:2] + ":" + self.sourceEthernet[2:4] + ":" + self.sourceEthernet[4:6] 
+        + ":" + self.sourceEthernet[6:8] + ":" + self.sourceEthernet[8:10] + ":" + self.sourceEthernet[10:12] + '\n')
         outputFile.writelines("   EType: " + self.typeFieldEthernet + '\n')
 
         print()
         print(bcolors.UNDERLINE + "Ethernet Frame: " + bcolors.ENDC + bcolors.HEADER + self.destinationEthernet + bcolors.ENDC + " " + 
         bcolors.OKBLUE + self.sourceEthernet + bcolors.ENDC + " " + bcolors.OKGREEN + self.typeFieldEthernet + bcolors.ENDC)
-        print("   DMAC: " + bcolors.HEADER + self.destinationEthernet + bcolors.ENDC)
-        print("   SMAC: " + bcolors.OKBLUE + self.sourceEthernet + bcolors.ENDC)
+        print("   DMAC: " + bcolors.HEADER + self.destinationEthernet[0:2] + ":" + self.destinationEthernet[2:4] + ":" 
+        + self.destinationEthernet[4:6] + ":" + self.destinationEthernet[6:8] + ":" + self.destinationEthernet[8:10] + ":" 
+        + self.destinationEthernet[10:12] + bcolors.ENDC)
+        print("   SMAC: " + bcolors.OKBLUE + self.sourceEthernet[0:2] + ":" + self.sourceEthernet[2:4] + ":" + self.sourceEthernet[4:6] 
+        + ":" + self.sourceEthernet[6:8] + ":" + self.sourceEthernet[8:10] + ":" + self.sourceEthernet[10:12] + bcolors.ENDC)
         print("   EType: " + bcolors.OKGREEN + self.typeFieldEthernet + bcolors.ENDC)
 
 #IP
@@ -114,8 +134,11 @@ class ip():
         self.timeLive = self.ipFrame[16:18]
         self.ipProtocol = self.ipFrame[18:20]
         self.headChecksum = self.ipFrame[20:24]
-        self.sourceIP = self.ipFrame[24:32]
-        self.destinationIP = self.ipFrame[32:40]
+
+        self.sourceIP1 = self.ipFrame[24:32]
+        self.destinationIP1 = self.ipFrame[32:40]
+        self.sourceIP = hex2dotted(self.sourceIP1)
+        self.destinationIP = hex2dotted(self.destinationIP1)
     
     def getIPProtocol(self):
         return self.ipProtocol
@@ -124,7 +147,7 @@ class ip():
         outputFile.writelines('\n')
         outputFile.writelines("IP Frame: " + self.version_headerLength + " " + self.typeService + " " + self.totalLength 
         + " " + self.identification + " " + self.flags + " " + self.timeLive + " " + 
-        self.ipProtocol + " " + self.headChecksum + " " + self.sourceIP + " " + self.destinationIP + '\n')
+        self.ipProtocol + " " + self.headChecksum + " " + self.sourceIP1 + " " + self.destinationIP1 + '\n')
         outputFile.writelines("   Version: " + self.version_headerLength + '\n')
         outputFile.writelines("   Type of Service: " + self.typeService + '\n')
         outputFile.writelines("   Total Length: " + self.totalLength + '\n')
@@ -224,23 +247,22 @@ class vxlan():
 class intHeader():
     
     def __init__(self):
-        print()
-        print(offset)
-        print()
-
+        global stackEnding
+        global startingINTHeader
+        global endingINTHeader
+        global startingINTMetadataHeader
+        global endingINTMetadataHeader
+        global continueStack
         if stackEnding == 0:
             startingINTHeader = (100-offset)
-            endingINTHeader = (116-offset)
-        else:
-            startingINTHeader = stackEnding
-            endingINTHeader = startingINTHeader+16
+            endingINTHeader = (108-offset)
+            
         self.intFrame = hexStream[startingINTHeader:endingINTHeader]
 
         self.intType = self.intFrame[0:2]
         self.intReserved = self.intFrame[2:4]
         self.intLength = self.intFrame[4:6]
         self.intNextProtocol = self.intFrame[6:8]
-        self.intVariableOptionData = self.intFrame[8:16]
    
     def getINTNextProtocol(self):
         return self.intNextProtocol
@@ -248,34 +270,34 @@ class intHeader():
     def displayINT(self):
         outputFile.writelines('\n')
         outputFile.writelines("INT Frame: " + self.intType + " " + self.intReserved + " " + self.intLength + " " + 
-        self.intNextProtocol + " "+ self.intVariableOptionData + '\n')
+        self.intNextProtocol + '\n')
         outputFile.writelines("   Type: " + self.intType + '\n')
         outputFile.writelines("   Reserved: " + self.intReserved + '\n')
         outputFile.writelines("   Length: " + self.intLength + '\n')
         outputFile.writelines("   Next Protocol: " + self.intNextProtocol + '\n')
-        outputFile.writelines("   Variable Option Data: " + self.intVariableOptionData + '\n')
 
         print()
-        print(bcolors.UNDERLINE + "INT Frame: " + bcolors.ENDC + bcolors.FAIL + self.intVariableOptionData 
-        + bcolors.ENDC + " " + bcolors.OKBLUE + self.intReserved + bcolors.ENDC + " " + bcolors.OKGREEN 
-        + self.intLength + bcolors.ENDC + " " + bcolors.WARNING + self.intNextProtocol + bcolors.ENDC + " " 
-        + bcolors.FAIL + self.intVariableOptionData + bcolors.ENDC)
+        print(bcolors.UNDERLINE + "INT Frame: " + bcolors.HEADER + self.intType + bcolors.ENDC + " " + bcolors.ENDC + bcolors.OKBLUE + self.intReserved + bcolors.ENDC + " " + bcolors.OKGREEN 
+        + self.intLength + bcolors.ENDC + " " + bcolors.WARNING + self.intNextProtocol + bcolors.ENDC)
         print("   Type: " + bcolors.HEADER + self.intType + bcolors.ENDC)
         print("   Reserved: " + bcolors.OKBLUE + self.intReserved + bcolors.ENDC)
         print("   Length: " + bcolors.OKGREEN + self.intLength + bcolors.ENDC)
         print("   Next Protocol: " + bcolors.WARNING + self.intNextProtocol + bcolors.ENDC)
-        print("   Variable Option Data: " + bcolors.FAIL + self.intVariableOptionData + bcolors.ENDC)
 
 #INT Metadata Stack
 class INTMetadata():
     
     def __init__(self):
+        global stackEnding
+        global startingINTHeader
+        global endingINTHeader
+        global startingINTMetadataHeader
+        global endingINTMetadataHeader
+        global continueStack
         if stackEnding == 0:
-            startingINTMetadataHeader = (116-offset)
-            endingINTMetadataHeader = (132-offset)
-        else:
-            startingINTMetadataHeader = endingINTHeader
-            endingINTMetadataHeader = startingINTMetadataHeader+16
+            startingINTMetadataHeader = (108-offset)
+            endingINTMetadataHeader = (124-offset)
+        
         self.intMetadataHeader = hexStream[startingINTMetadataHeader:endingINTMetadataHeader]
         
         self.irreg = self.intMetadataHeader[0:4]
@@ -386,17 +408,31 @@ class INTMetadata():
         print("   Reserved: " + bcolors.FAIL + self.metaReserved + bcolors.ENDC)
     
     def displayINTMetadataStack(self):
+        global stackEnding
+        global startingINTHeader
+        global endingINTHeader
+        global startingINTMetadataHeader
+        global endingINTMetadataHeader
+        global continueStack
         outputFile.writelines('\n')
         count = self.metaInstrBitmapBits.count('1', 0, 7)
         totalParsing = (count*self.totalHopCntDec)*8
         
-        if self.intNextProtocol != '05':
-            startingStack = (132-offset)
-            self.endingStack = ((132+totalParsing)-offset)
-        else:
-            startingStack = endingINTMetadataHeader
-            self.endingStack = startingStack+totalParsing
-        self.intMetadataHeaderStack = hexStream[startingStack:self.endingStack]
+        if (self.intNextProtocol != nextProtocolINT) and (continueStack == False):
+            startingStack = (124-offset)
+            stackEnding = ((124+totalParsing)-offset)
+        elif (self.intNextProtocol == nextProtocolINT) and (continueStack == False):
+            startingStack = (124-offset)
+            stackEnding = ((124+totalParsing)-offset)
+            startingINTHeader = startingINTHeader + stackEnding
+            endingINTHeader = startingINTHeader+8
+            startingINTMetadataHeader = endingINTHeader
+            endingINTMetadataHeader = startingINTMetadataHeader+16
+        elif (continueStack == True):
+            pass
+            # startingStack = endingINTMetadataHeader
+            # stackEnding = startingStack+totalParsing
+        self.intMetadataHeaderStack = hexStream[startingStack:stackEnding]
         
         tempStacList = self.intMetadataHeaderStack
 
@@ -408,7 +444,7 @@ class INTMetadata():
             print(bcolors.BOLD + "   Hop " + str(i) + ":" + bcolors.ENDC + '\n')
             if self.metaSwitchID == '1':
                 outputFile.writelines("      Switch ID: " + tempStacList[0:8] + '\n')
-                print("      Switch ID: " + + bcolors.HEADER + tempStacList[0:8] + bcolors.ENDC)
+                print("      Switch ID: " + bcolors.HEADER + tempStacList[0:8] + bcolors.ENDC)
                 tempStacList = tempStacList.replace(tempStacList[0:8], "")
             if self.metaIngressPortID == '1':
                 outputFile.writelines("      Ingress Port ID: " + tempStacList[0:8] + '\n')
@@ -442,14 +478,10 @@ class INTMetadata():
     def getMetaStackEnding(self):
         return self.endingStack
 
-#Packet Class inheriting
-class Packet(Ethernet, ip, udp, vxlan, intHeader, INTMetadata):
+#INT Packet Class inheriting
+class INTPacket(intHeader, INTMetadata):
     
     def __init__(self):
-        Ethernet.__init__(self)
-        ip.__init__(self)
-        udp.__init__(self)
-        vxlan.__init__(self)
         intHeader.__init__(self)
         INTMetadata.__init__(self)
 
@@ -469,31 +501,30 @@ if transport == '1':
 
         outputFile = open("INT Output Files/" + file_out, "a")
         outputFile.truncate(0)
-        outputFile.writelines("Packet: " + hexStream[0:80] + '\n')
-        outputFile.writelines(hexStream[80:160] + '\n')
-        outputFile.writelines(hexStream[160:240] + '\n')
-        outputFile.writelines(hexStream[240:320] + '\n')
+        outputFile.writelines("Packet: " + hexStream + '\n')
+        # outputFile.writelines(hexStream[80:160] + '\n')
+        # outputFile.writelines(hexStream[160:240] + '\n')
+        # outputFile.writelines(hexStream[240:320] + '\n')
 
         #Parsing INT Packet 
-        newPacket = Packet()
-
         def parseEth():
+            newPacket = Ethernet()
             typeField = newPacket.getTypeFieldIP()
             newPacket.displayEthernet()
             if typeField == '0800':
+                newPacket = ip()
                 ipProtocol2 = newPacket.getIPProtocol()
                 newPacket.displayIP()
                 if ipProtocol2 == '11':
+                    newPacket = udp()
                     newPacket.displayUDP()
                     destinationUDP = newPacket.getDestinationUDP()
                     if destinationUDP == "12b5":
+                        newPacket = vxlan()
                         newPacket.displayVXLAN()
                         nextProtocol = newPacket.getNextProtocol()
-                        if nextProtocol == "05":
-                            outputFile.writelines('\n')
-                            outputFile.writelines("INT Header exists!" + '\n')
-                            print()
-                            print(bcolors.UNDERLINE + "INT Header exists!" + bcolors.ENDC)
+                        if nextProtocol == nextProtocolINT:
+                            newPacket = INTPacket()
                             newPacket.displayINT()
                             newPacket.displayINTMetadata()
                             newPacket.displayINTMetadataStack()
@@ -521,19 +552,19 @@ if transport == '1':
             print(file_out + " is ready!")
             print()
         def parseIP():
+            newPacket = ip()
             ipProtocol2 = newPacket.getIPProtocol()
             newPacket.displayIP()
             if ipProtocol2 == '11':
+                newPacket = udp()
                 newPacket.displayUDP()
                 destinationUDP = newPacket.getDestinationUDP()
                 if destinationUDP == "12b5":
+                    newPacket = vxlan()
                     newPacket.displayVXLAN()
                     nextProtocol = newPacket.getNextProtocol()
-                    if nextProtocol == "05":
-                        outputFile.writelines('\n')
-                        outputFile.writelines("INT Header exists!" + '\n')
-                        print()
-                        print(bcolors.UNDERLINE + "INT Header exists!" + bcolors.ENDC)
+                    if nextProtocol == nextProtocolINT:
+                        newPacket = INTPacket()
                         newPacket.displayINT()
                         newPacket.displayINTMetadata()
                         newPacket.displayINTMetadataStack()
@@ -556,16 +587,15 @@ if transport == '1':
             print(file_out + " is ready!")
             print()
         def parseUDP():
+            newPacket = udp()
             newPacket.displayUDP()
             destinationUDP = newPacket.getDestinationUDP()
             if destinationUDP == "12b5":
+                newPacket = vxlan()
                 newPacket.displayVXLAN()
                 nextProtocol = newPacket.getNextProtocol()
-                if nextProtocol == "05":
-                    outputFile.writelines('\n')
-                    outputFile.writelines("INT Header exists!" + '\n')
-                    print()
-                    print(bcolors.UNDERLINE + "INT Header exists!" + bcolors.ENDC)
+                if nextProtocol == nextProtocolINT:
+                    newPacket = INTPacket()
                     newPacket.displayINT()
                     newPacket.displayINTMetadata()
                     newPacket.displayINTMetadataStack()
@@ -583,13 +613,11 @@ if transport == '1':
             print(file_out + " is ready!")
             print()
         def parseVXLAN():
+            newPacket = vxlan()
             newPacket.displayVXLAN()
             nextProtocol = newPacket.getNextProtocol()
-            if nextProtocol == "05":
-                outputFile.writelines('\n')
-                outputFile.writelines("INT Header exists!" + '\n')
-                print()
-                print(bcolors.UNDERLINE + "INT Header exists!" + bcolors.ENDC)
+            if nextProtocol == nextProtocolINT:
+                newPacket = INTPacket()
                 newPacket.displayINT()
                 newPacket.displayINTMetadata()
                 newPacket.displayINTMetadataStack()
@@ -602,10 +630,7 @@ if transport == '1':
             print(file_out + " is ready!")
             print()
         def parseINT():
-            outputFile.writelines('\n')
-            outputFile.writelines("INT Header exists!" + '\n')
-            print()
-            print(bcolors.UNDERLINE + "INT Header exists!" + bcolors.ENDC)
+            newPacket = INTPacket()
             newPacket.displayINT()
             newPacket.displayINTMetadata()
             newPacket.displayINTMetadataStack()
@@ -615,18 +640,6 @@ if transport == '1':
 
         if startHeader == '1':
             parseEth()
-            # variableOptionData = newPacket.getMetadata()
-            # intNextProtocolCheck = newPacket.getINTNextProtocol()
-            # if intNextProtocolCheck == '05':
-            #     stackEnding = newPacket.getMetaStackEnding()
-            #     print()
-            #     print(stackEnding)
-            #     print()
-            #     new2Packet = Packet()
-            #     new2Packet.displayINT()
-            #     new2Packet.displayINTMetadata()
-            #     new2Packet.displayINTMetadataStack()
-                # intNextProtocolCheck = newPacket.getINTNextProtocol()
         elif startHeader == '2':
             parseIP()
         elif startHeader == '3':

@@ -59,9 +59,14 @@
 # print(sample[0:80])
 # print(sample[80:160])
 
-def thing():
-    asdf = 1
-    print('hello')
-    return asdf
-def otherthing():
-    pass
+# def thing():
+#     asdf = 1
+#     print('hello')
+#     return asdf
+# def otherthing():
+#     pass
+
+import socket
+import struct
+addr_long = int("c0a8380b",16)
+print(socket.inet_ntoa(struct.pack("<L", addr_long)))
