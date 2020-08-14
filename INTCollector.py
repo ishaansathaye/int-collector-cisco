@@ -1,6 +1,7 @@
 import socket
 from bitstring import BitArray, __version__
 import struct
+import argparse
 
 #Color-coding
 class bcolors:
@@ -48,17 +49,19 @@ startingINTMetadataHeader = 0
 endingINTMetadataHeader = 0
 startingStack = 0
 nextProtocolINT = '05'
-transport = input("What mode of transport?(UDP-1, TCP-2, Other-3): ")
 
-if transport == '1':
-    print()
-    localPort = int(input("Enter UDP Port Number: "))
-    startHeader = input("What is the starting header?(Eth-1, IP-2, UDP-3, VXLAN-4, INT-5): ")
-    file_out = input("Output Filename(No extension): ")
-    if file_out == None:
-        file_out == "output_INT"
-    file_out = file_out + ".txt"
+parser = argparse.ArgumentParser(description='INT Collector Input Parameters:')
+parser.add_argument('-t', type=str, help='transport for INT frames: u - UDP, t - TCP (default: u)', default='u')
+parser.add_argument('-p', type=int, help='transport port number: (default: 20001)', default=20001)
+parser.add_argument('-start', type=str, help='starting header: (Eth-1, IP-2, UDP-3, VXLAN-4, INT-5)', default='1')
+parser.add_argument('-outFile', type=str, help='name of file for output (without extension .txt)', default='OUTint')
+args = parser.parse_args()
+transport = args.t
+localPort = args.p
+startHeader = args.start
+file_out = args.outFile
 
+if transport == 'u':
     #Server
     localIP = "127.0.0.1"
     # localPort = 20001
@@ -67,7 +70,6 @@ if transport == '1':
     UDPServerSocket = socket.socket(family=socket.AF_INET, type=socket.SOCK_DGRAM)
     # Bind to address and ip
     UDPServerSocket.bind((localIP, localPort))
-    print()
     print("Searching...")
     hexStream = ""
     if startHeader == '1':
@@ -486,7 +488,7 @@ class INTPacket(intHeader, INTMetadata):
         INTMetadata.__init__(self)
 
 # Listen for incoming datagrams
-if transport == '1':
+if transport == 'u':
     while(True):
         bytesAddressPair = UDPServerSocket.recvfrom(bufferSize)
         message = bytesAddressPair[0]
