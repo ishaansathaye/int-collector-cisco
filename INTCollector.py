@@ -53,8 +53,8 @@ nextProtocolINT = '05'
 parser = argparse.ArgumentParser(description='INT Collector Input Parameters:')
 parser.add_argument('-t', type=str, help='transport for INT frames: u - UDP, t - TCP (default: u)', default='u')
 parser.add_argument('-p', type=int, help='transport port number: (default: 20001)', default=20001)
-parser.add_argument('-start', type=str, help='starting header: (Eth-1, IP-2, UDP-3, VXLAN-4, INT-5)', default='1')
-parser.add_argument('-outFile', type=str, help='name of file for output (without extension .txt)', default='OUTint')
+parser.add_argument('-start', type=str, help='starting header: (Eth-1, IP-2, UDP-3, VXLAN-4, INT-5) (default: 1)', default='1')
+parser.add_argument('-outFile', type=str, help='name of file for output (without extension .txt) (default: OUTint)', default='OUTint')
 args = parser.parse_args()
 transport = args.t
 localPort = args.p
@@ -279,7 +279,8 @@ class intHeader():
         outputFile.writelines("   Next Protocol: " + self.intNextProtocol + '\n')
 
         print()
-        print(bcolors.UNDERLINE + "INT Frame: " + bcolors.HEADER + self.intType + bcolors.ENDC + " " + bcolors.ENDC + bcolors.OKBLUE + self.intReserved + bcolors.ENDC + " " + bcolors.OKGREEN 
+        print(bcolors.UNDERLINE + "INT Frame: " + bcolors.HEADER + self.intType + bcolors.ENDC + " " + bcolors.ENDC 
+        + bcolors.OKBLUE + self.intReserved + bcolors.ENDC + " " + bcolors.OKGREEN 
         + self.intLength + bcolors.ENDC + " " + bcolors.WARNING + self.intNextProtocol + bcolors.ENDC)
         print("   Type: " + bcolors.HEADER + self.intType + bcolors.ENDC)
         print("   Reserved: " + bcolors.OKBLUE + self.intReserved + bcolors.ENDC)
@@ -426,14 +427,13 @@ class INTMetadata():
         elif (self.intNextProtocol == nextProtocolINT) and (continueStack == False):
             startingStack = (124-offset)
             stackEnding = ((124+totalParsing)-offset)
-            startingINTHeader = startingINTHeader + stackEnding
+            startingINTHeader = stackEnding
             endingINTHeader = startingINTHeader+8
             startingINTMetadataHeader = endingINTHeader
             endingINTMetadataHeader = startingINTMetadataHeader+16
         elif (continueStack == True):
             pass
-            # startingStack = endingINTMetadataHeader
-            # stackEnding = startingStack+totalParsing
+
         self.intMetadataHeaderStack = hexStream[startingStack:stackEnding]
         
         tempStacList = self.intMetadataHeaderStack
@@ -504,9 +504,6 @@ if transport == 'u':
         outputFile = open("INT Output Files/" + file_out, "a")
         outputFile.truncate(0)
         outputFile.writelines("Packet: " + hexStream + '\n')
-        # outputFile.writelines(hexStream[80:160] + '\n')
-        # outputFile.writelines(hexStream[160:240] + '\n')
-        # outputFile.writelines(hexStream[240:320] + '\n')
 
         #Parsing INT Packet 
         def parseEth():
@@ -526,10 +523,25 @@ if transport == 'u':
                         newPacket.displayVXLAN()
                         nextProtocol = newPacket.getNextProtocol()
                         if nextProtocol == nextProtocolINT:
+                            # newPacket = INTPacket()
+                            # newPacket.displayINT()
+                            # newPacket.displayINTMetadata()
+                            # newPacket.displayINTMetadataStack()
+
                             newPacket = INTPacket()
                             newPacket.displayINT()
                             newPacket.displayINTMetadata()
                             newPacket.displayINTMetadataStack()
+                            # parseINT()
+                            # newPacket = INTPacket()
+                            intNextProtocolCheck = newPacket.getINTNextProtocol()
+                            if intNextProtocolCheck == nextProtocolINT:
+                                # stackEnding = newPacket.getMetaStackEnding()
+                                new2Packet = INTPacket()
+                                new2Packet.displayINT()
+                                new2Packet.displayINTMetadata()
+                                new2Packet.displayINTMetadataStack()
+                                intNextProtocolCheck = newPacket.getINTNextProtocol()
                         else:
                             outputFile.writelines('\n')
                             outputFile.writelines("No INT Header!" + '\n')
@@ -586,7 +598,7 @@ if transport == 'u':
                 print()
                 print(bcolors.UNDERLINE + "Cannot display UDP Header!" + bcolors.ENDC)
             print()
-            print(file_out + " is ready!")
+            print(file_out + ".txt" + " is ready!")
             print()
         def parseUDP():
             newPacket = udp()
@@ -612,7 +624,7 @@ if transport == 'u':
                 print()
                 print(bcolors.UNDERLINE + "Cannot display VXLAN Header!" + bcolors.ENDC)
             print()
-            print(file_out + " is ready!")
+            print(file_out + ".txt" + " is ready!")
             print()
         def parseVXLAN():
             newPacket = vxlan()
@@ -629,7 +641,7 @@ if transport == 'u':
                 print()
                 print(bcolors.UNDERLINE + "No INT Header!" + bcolors.ENDC)
             print()
-            print(file_out + " is ready!")
+            print(file_out + ".txt" + " is ready!")
             print()
         def parseINT():
             newPacket = INTPacket()
@@ -637,11 +649,60 @@ if transport == 'u':
             newPacket.displayINTMetadata()
             newPacket.displayINTMetadataStack()
             print()
-            print(file_out + " is ready!")
+            print(file_out + ".txt" + " is ready!")
             print()
 
         if startHeader == '1':
-            parseEth()
+            newPacket = Ethernet()
+            typeField = newPacket.getTypeFieldIP()
+            newPacket.displayEthernet()
+            if typeField == '0800':
+                newPacket = ip()
+                ipProtocol2 = newPacket.getIPProtocol()
+                newPacket.displayIP()
+                if ipProtocol2 == '11':
+                    newPacket = udp()
+                    newPacket.displayUDP()
+                    destinationUDP = newPacket.getDestinationUDP()
+                    if destinationUDP == "12b5":
+                        newPacket = vxlan()
+                        newPacket.displayVXLAN()
+                        nextProtocol = newPacket.getNextProtocol()
+                        if nextProtocol == nextProtocolINT:
+                            newPacket = INTPacket()
+                            newPacket.displayINT()
+                            newPacket.displayINTMetadata()
+                            newPacket.displayINTMetadataStack()
+                            intNextProtocolCheck = newPacket.getINTNextProtocol()
+                            if intNextProtocolCheck == nextProtocolINT:
+                                new2Packet = INTPacket()
+                                new2Packet.displayINT()
+                                new2Packet.displayINTMetadata()
+                                new2Packet.displayINTMetadataStack()
+                                intNextProtocolCheck = new2Packet.getINTNextProtocol()
+                        else:
+                            outputFile.writelines('\n')
+                            outputFile.writelines("No INT Header!" + '\n')
+                            print()
+                            print(bcolors.UNDERLINE + "No INT Header!" + bcolors.ENDC)
+                    else:
+                        outputFile.writelines('\n')
+                        outputFile.writelines("Cannot display VXLAN Header!" + '\n')
+                        print()
+                        print(bcolors.UNDERLINE + "Cannot display VXLAN Header!" + bcolors.ENDC)
+                else:
+                    outputFile.writelines('\n')
+                    outputFile.writelines("Cannot display UDP Header!" + '\n')
+                    print()
+                    print(bcolors.UNDERLINE + "Cannot display UDP Header!" + bcolors.ENDC)
+            else:
+                outputFile.writelines('\n')
+                outputFile.writelines('Cannot display IP Header!' + '\n')
+                print()
+                print(bcolors.UNDERLINE + "Cannot display IP Header!" + bcolors.ENDC)
+            print()
+            print(file_out + ".txt" + " is ready!")
+            print()
         elif startHeader == '2':
             parseIP()
         elif startHeader == '3':
